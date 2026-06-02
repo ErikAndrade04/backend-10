@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscrição — Campeonato de Games</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface2: #1c1c28;
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(255,255,255,0.18);
+      --accent: #e8ff3a;
+      --accent-dark: #b8cc20;
+      --accent-glow: rgba(232,255,58,0.18);
+      --text: #f0f0f5;
+      --muted: #7a7a94;
+      --danger: #ff4f4f;
+      --danger-bg: rgba(255,79,79,0.1);
+      --success: #3affb0;
+      --success-bg: rgba(58,255,176,0.1);
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+ 
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+ 
+    /* Background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232,255,58,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,255,58,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+ 
+    /* Glow orb */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(232,255,58,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+ 
+    .page { position: relative; z-index: 1; width: 100%; max-width: 480px; }
+ 
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      animation: fadeDown 0.5s ease both;
+    }
+ 
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(232,255,58,0.3);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 99px;
+      margin-bottom: 1rem;
+    }
+ 
+    .badge::before { content: '⬢'; font-size: 10px; }
+ 
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(42px, 10vw, 60px);
+      letter-spacing: 0.04em;
+      line-height: 1;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+ 
+    h1 span { color: var(--accent); }
+ 
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+ 
+    /* Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease 0.1s both;
+    }
+ 
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+ 
+    /* Fields */
+    .field { margin-bottom: 1.25rem; }
+ 
+    .field label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+ 
+    .field label .icon {
+      width: 18px;
+      height: 18px;
+      opacity: 0.7;
+    }
+ 
+    .field input,
+    .field select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-family: var(--font-body);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+    }
+ 
+    .field input::placeholder { color: #4a4a60; }
+    .field select { cursor: pointer; }
+    .field select option { background: #1c1c28; }
+ 
+    .select-wrap {
+      position: relative;
+    }
+ 
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 6px;
+      background: var(--muted);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      pointer-events: none;
+    }
+ 
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+ 
+    .field.has-error input,
+    .field.has-error select {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px var(--danger-bg);
+    }
+ 
+    .hint {
+      font-size: 12px;
+      color: #4a4a60;
+      margin-top: 5px;
+    }
+ 
+    .error-msg {
+      display: none;
+      font-size: 12px;
+      color: var(--danger);
+      margin-top: 5px;
+    }
+ 
+    .field.has-error .error-msg { display: block; }
+ 
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+ 
+    /* Button */
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #0a0a0f;
+      border: none;
+      border-radius: 10px;
+      font-family: var(--font-display);
+      font-size: 20px;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+ 
+    .btn:hover {
+      background: #f0ff6a;
+      box-shadow: 0 0 24px var(--accent-glow);
+    }
+ 
+    .btn:active { transform: scale(0.98); }
+ 
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+ 
+    /* Alerts */
+    .alert {
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      margin-top: 1rem;
+      line-height: 1.5;
+    }
+ 
+    .alert.show { display: flex; animation: fadeUp 0.3s ease both; }
+ 
+    .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+ 
+    .alert-error {
+      background: var(--danger-bg);
+      border: 1px solid rgba(255,79,79,0.25);
+      color: #ff8080;
+    }
+ 
+    .alert-success {
+      background: var(--success-bg);
+      border: 1px solid rgba(58,255,176,0.25);
+      color: var(--success);
+    }
+ 
+    .alert-success strong { display: block; margin-bottom: 2px; color: var(--success); }
+    .alert-success span { font-size: 13px; opacity: 0.8; color: var(--success); }
+ 
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 12px;
+      color: #3a3a50;
+      animation: fadeUp 0.5s ease 0.2s both;
+    }
+ 
+    /* Animations */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+ 
+<div class="page">
+ 
+  <header class="header">
+    <div class="badge">Temporada 2025</div>
+    <h1>ARENA<br /><span>GAMES</span></h1>
+    <p class="subtitle">Inscreva-se e dispute com os melhores.<br />Preencha os dados abaixo para garantir sua vaga.</p>
+  </header>
+ 
+  <div class="card">
+ 
+    <div class="field" id="field-nickname">
+      <label for="nickname">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+        Nickname
+      </label>
+      <input type="text" id="nickname" placeholder="Seu nome no jogo" autocomplete="off" maxlength="30" />
+      <p class="hint">Mínimo de 4 caracteres.</p>
+      <p class="error-msg" id="err-nickname"></p>
+    </div>
+ 
+    <div class="field" id="field-game">
+      <label for="game">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="6" width="20" height="12" rx="3"/>
+          <path d="M8 12h2m-1-1v2M15 12h.01M17 12h.01"/>
+        </svg>
+        Jogo
+      </label>
+      <div class="select-wrap">
+        <select id="game">
+          <option value="">— Selecione um jogo —</option>
+          <option value="valorant">Valorant</option>
+          <option value="lol">League of Legends</option>
+          <option value="cs2">Counter-Strike 2</option>
+          <option value="free-fire">Free Fire</option>
+          <option value="fortnite">Fortnite</option>
+          <option value="eafc">EA Sports FC 25</option>
+          <option value="r6">Rainbow Six Siege</option>
+          <option value="sf6">Street Fighter 6</option>
+        </select>
+      </div>
+      <p class="error-msg" id="err-game"></p>
+    </div>
+ 
+    <div class="field" id="field-email">
+      <label for="email">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M2 8l10 7 10-7"/>
+        </svg>
+        E-mail
+      </label>
+      <input type="email" id="email" placeholder="seu@email.com" autocomplete="email" />
+      <p class="error-msg" id="err-email"></p>
+    </div>
+ 
+    <hr class="divider" />
+ 
+    <button class="btn" onclick="handleSubmit()">CONFIRMAR INSCRIÇÃO</button>
+ 
+    <div class="alert alert-error" id="alert-error" role="alert">
+      <span class="alert-icon">✕</span>
+      <span>Preencha todos os campos obrigatórios.</span>
+    </div>
+ 
+    <div class="alert alert-success" id="alert-success" role="alert">
+      <span class="alert-icon">✓</span>
+      <div>
+        <strong>Inscrição realizada com sucesso!</strong>
+        <span id="success-info"></span>
+      </div>
+    </div>
+ 
+  </div>
+ 
+  <p class="footer">Arena Games © 2025 · Todos os direitos reservados</p>
+</div>
+ 
+<script>
+  function clearErrors() {
+    ['nickname', 'game', 'email'].forEach(function(f) {
+      var field = document.getElementById('field-' + f);
+      field.classList.remove('has-error');
+      document.getElementById('err-' + f).textContent = '';
+    });
+    document.getElementById('alert-error').classList.remove('show');
+    document.getElementById('alert-success').classList.remove('show');
+  }
+ 
+  function setError(field, msg) {
+    var el = document.getElementById('field-' + field);
+    el.classList.add('has-error');
+    document.getElementById('err-' + field).textContent = msg;
+  }
+ 
+  function handleSubmit() {
+    clearErrors();
+ 
+    var nickname = document.getElementById('nickname').value.trim();
+    var game     = document.getElementById('game').value;
+    var email    = document.getElementById('email').value.trim();
+    var hasError = false;
+ 
+    if (!nickname) {
+      setError('nickname', 'O nickname é obrigatório.');
+      hasError = true;
+    } else if (nickname.length < 4) {
+      setError('nickname', 'O nickname deve ter pelo menos 4 caracteres.');
+      hasError = true;
+    }
+ 
+    if (!game) {
+      setError('game', 'Selecione um jogo para continuar.');
+      hasError = true;
+    }
+ 
+    if (!email) {
+      setError('email', 'O e-mail é obrigatório.');
+      hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('email', 'Informe um e-mail válido.');
+      hasError = true;
+    }
+ 
+    if (hasError) {
+      document.getElementById('alert-error').classList.add('show');
+      return;
+    }
+ 
+    var gameLabel = document.getElementById('game');
+    var gameName  = gameLabel.options[gameLabel.selectedIndex].text;
+ 
+    document.getElementById('success-info').textContent =
+      nickname + ' inscrito em ' + gameName + ' · ' + email;
+    document.getElementById('alert-success').classList.add('show');
+ 
+    document.getElementById('nickname').value = '';
+    document.getElementById('game').value     = '';
+    document.getElementById('email').value    = '';
+  }
+</script>
+</body>
+</html>
